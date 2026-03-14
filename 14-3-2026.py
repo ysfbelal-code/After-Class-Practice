@@ -35,9 +35,18 @@ if user_question:
         st.session_state.conversation.append({'role':role, 'question':user_question.strip(), 'answer':answer})
     else:
         st.warning("⚠️ Please enter a question if you want to use this AI.")
-if clear:
+elif clear:
     if st.session_state.conversation is None:
         st.toast("Your conversation history is already empty.")
     else:
         st.session_state.conversation = []
         st.toast("Conversation history cleared!")
+elif view:
+    if st.session_state.conversation is None:
+        st.toast("Your conversation history is empty.")
+    else:
+        for i, chat in enumerate(st.session_state.conversation, 1):
+            st.markdown(f"{i}:")
+            st.markdown(f"You: {chat['question']}")
+            st.markdown(f"AI {chat['role']}: {chat['answer']}")
+            st.markdown('---')
