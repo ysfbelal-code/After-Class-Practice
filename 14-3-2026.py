@@ -35,3 +35,9 @@ if user_question:
         st.session_state.conversation.append({'role':role, 'question':user_question.strip(), 'answer':answer})
     else:
         st.warning("⚠️ Please enter a question if you want to use this AI.")
+if clear:
+    if st.session_state.conversation is None:
+        st.toast("Your conversation history is already empty.")
+    else:
+        st.session_state.conversation = []
+        st.toast("Conversation history cleared!")
