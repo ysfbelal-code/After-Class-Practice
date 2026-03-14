@@ -138,7 +138,7 @@ languages = {
     "Zulu": "zu",
 }
 
-language = st.selectbox("Enter the app language:", languages.keys())
+language = st.sidebar.selectbox("Enter the app language:", languages.keys())
 st.session_state['language'] = language
 role = st.selectbox("Choose the style of the AI's response:", ("Teacher", "Professor", "Friendly Helper"))
 user_question = st.text_input("How can I help you today?")
