@@ -34,4 +34,3 @@ if user_question:
         st.session_state.conversation.append({'role':role, 'question':user_question.strip(), 'answer':answer})
     else:
         st.warning("⚠️ Please enter a question if you want to use this AI.")
-st.rerun()
