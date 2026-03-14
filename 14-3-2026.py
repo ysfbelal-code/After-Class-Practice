@@ -1,6 +1,5 @@
 import streamlit as st
 from groq_api import generate_response
-import time
 
 st.session_state.setdefault("conversation", [])
 
@@ -27,15 +26,8 @@ with c3:
 
 role = st.selectbox("Choose the style of the AI's response:", ("Teacher", "Professor", "Friendly Helper"))
 user_question = st.text_input("How can I help you today?")
-if user_question is not None:
-    if user_question.strip():
-        prompt = f"You are a {role}. Please answer the following question: {user_question}"
-        with st.spinner("Generating answer..."):
-            answer = st.markdown(generate_response(prompt, temperature=0.3, tokens=1024))
-        st.session_state.conversation.append({'role':role, 'question':user_question.strip(), 'answer':answer})
-    else:
-        st.warning("⚠️ Please enter a question if you want to use this AI.")
-elif clear:
+
+if clear:
     if st.session_state.conversation is None:
         st.toast("Your conversation history is already empty.")
     else:
@@ -50,3 +42,11 @@ elif view:
             st.markdown(f"You: {chat['question']}")
             st.markdown(f"AI {chat['role']}: {chat['answer']}")
             st.markdown('---')
+elif user_question:
+    if user_question.strip():
+        prompt = f"You are a {role}. Please answer the following question: {user_question}"
+        with st.spinner("Generating answer..."):
+            answer = st.markdown(generate_response(prompt, temperature=0.3, tokens=1024))
+        st.session_state.conversation.append({'role':role, 'question':user_question.strip(), 'answer':answer})
+    else:
+        st.warning("⚠️ Please enter a question if you want to use this AI.")
