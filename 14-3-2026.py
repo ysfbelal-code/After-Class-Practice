@@ -1,5 +1,5 @@
 import streamlit as st
-from groq_api import generate_response, translate_text
+from groq_api import translate_text
 import io
 
 st.session_state.setdefault("conversation", [])
