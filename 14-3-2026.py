@@ -133,5 +133,3 @@ elif user_question:
         })
     else:
         st.warning(translate_text("⚠️ Please enter a question if you want to use this AI.", lang))
-
-st.rerun()
