@@ -1,53 +1,186 @@
-import streamlit
-from openai import OpenAI
+import streamlit as st
+from groq_api import translate_text
+import io
 
-def generate_response(prompt: str, temperature: float = 0.3, tokens: int = 1024):
-    apikey = streamlit.secrets['groq_api']
-    groq_url="https://api.groq.com/openai/v1"
-    models = streamlit.secrets.get('GROQ_MODELS', ['llama-3.1-8b-instant', 'mixtral-8x7b-32768'])
+languages = {
+    "Afrikaans": "af",
+    "Albanian": "sq",
+    "Amharic": "am",
+    "Arabic": "ar",
+    "Armenian": "hy",
+    "Azerbaijani": "az",
+    "Basque": "eu",
+    "Belarusian": "be",
+    "Bengali": "bn",
+    "Bosnian": "bs",
+    "Bulgarian": "bg",
+    "Catalan": "ca",
+    "Cebuano": "ceb",
+    "Chinese (Simplified)": "zh-CN",
+    "Chinese (Traditional)": "zh-TW",
+    "Corsican": "co",
+    "Croatian": "hr",
+    "Czech": "cs",
+    "Danish": "da",
+    "Dutch": "nl",
+    "English": "en",
+    "Esperanto": "eo",
+    "Estonian": "et",
+    "Finnish": "fi",
+    "French": "fr",
+    "Frisian": "fy",
+    "Galician": "gl",
+    "Georgian": "ka",
+    "German": "de",
+    "Greek": "el",
+    "Gujarati": "gu",
+    "Haitian Creole": "ht",
+    "Hausa": "ha",
+    "Hawaiian": "haw",
+    "Hebrew": "he",
+    "Hindi": "hi",
+    "Hmong": "hmn",
+    "Hungarian": "hu",
+    "Icelandic": "is",
+    "Igbo": "ig",
+    "Indonesian": "id",
+    "Irish": "ga",
+    "Italian": "it",
+    "Japanese": "ja",
+    "Javanese": "jv",
+    "Kannada": "kn",
+    "Kazakh": "kk",
+    "Khmer": "km",
+    "Kinyarwanda": "rw",
+    "Korean": "ko",
+    "Kurdish": "ku",
+    "Kyrgyz": "ky",
+    "Lao": "lo",
+    "Latin": "la",
+    "Latvian": "lv",
+    "Lithuanian": "lt",
+    "Luxembourgish": "lb",
+    "Macedonian": "mk",
+    "Malagasy": "mg",
+    "Malay": "ms",
+    "Malayalam": "ml",
+    "Maltese": "mt",
+    "Maori": "mi",
+    "Marathi": "mr",
+    "Mongolian": "mn",
+    "Myanmar (Burmese)": "my",
+    "Nepali": "ne",
+    "Norwegian": "no",
+    "Nyanja (Chichewa)": "ny",
+    "Odia (Oriya)": "or",
+    "Pashto": "ps",
+    "Persian": "fa",
+    "Polish": "pl",
+    "Portuguese": "pt",
+    "Punjabi": "pa",
+    "Romanian": "ro",
+    "Russian": "ru",
+    "Samoan": "sm",
+    "Scots Gaelic": "gd",
+    "Serbian": "sr",
+    "Sesotho": "st",
+    "Shona": "sn",
+    "Sindhi": "sd",
+    "Sinhala": "si",
+    "Slovak": "sk",
+    "Slovenian": "sl",
+    "Somali": "so",
+    "Spanish": "es",
+    "Sundanese": "su",
+    "Swahili": "sw",
+    "Swedish": "sv",
+    "Tagalog (Filipino)": "tl",
+    "Tajik": "tg",
+    "Tamil": "ta",
+    "Tatar": "tt",
+    "Telugu": "te",
+    "Thai": "th",
+    "Turkish": "tr",
+    "Turkmen": "tk",
+    "Ukrainian": "uk",
+    "Urdu": "ur",
+    "Uyghur": "ug",
+    "Uzbek": "uz",
+    "Vietnamese": "vi",
+    "Welsh": "cy",
+    "Xhosa": "xh",
+    "Yiddish": "yi",
+    "Yoruba": "yo",
+    "Zulu": "zu",
+}
 
-    if not apikey:
-        return "Error: groq_api missing in secrets"
+st.session_state.setdefault("conversation", [])
+if 'language' not in st.session_state:
+    st.session_state['language'] = 'English'
+
+st.markdown("""
+<style>
+@import url('');
+
+html, body, [class*="css"], [class*="st-"], .stApp, .stApp * {
+    font-family: 'Yu Gothic UI Light', Yu, sans-serif !important;
+}
+</style>
+""", unsafe_allow_html=True)
+language = st.sidebar.selectbox("Enter the app language:", languages.keys())
+if language:
+    st.session_state['language'] = language
+role = st.selectbox(translate_text("Choose the style of the AI's response:", language), 
+                        (translate_text("Teacher", language), 
+                         translate_text("Professor", language), 
+                         translate_text("Friendly Helper", language)))
     
-    last_err = None
-    for m in models:
-        try:
-            c = OpenAI(api_key=apikey, base_url=groq_url)
-            r = c.chat.completions.create(
-                model=m,
-                messages = [{'role': 'user', 'content': prompt}], 
-                temperature=temperature, 
-                max_tokens=tokens
-            )
-            content =  r.choices[0].message.content
-            if content is not None:
-                return content
-        
-        except Exception as e:
-            last_err = e
-        
-        if last_err is None:
-            return "Error: no models available"
-        
-        return (
-    "Hugging Face model failed."
-    f"Tried models: {models}"
-    "Fix:"
-    "1) Switch to Hugging Face by inserting HF's models and changing to your HF API key, or"
-    "2) Replace Groq model in MODELS.\n"
-    f"Details: {type(last_err).__name__}: {last_err}"
-)
+user_question = st.text_input(translate_text("How can I help you today?", language))
 
-def translate_text(text: str, target_lang: str):
-    if target_lang.lower()=='english':
-        return text
-    prompt = f"""
-    Translate the following UI label into {target_lang}.
-    Return ONLY the translated text, no explanation or quotes, no punctuation changes\n{text}
-"""
-    
-    try:
-        translated = generate_response(prompt, temperature=0.1, tokens=64)
-        return translated.strip() if translated and not translated.startswith("Error") else text
-    except Exception as e:
-        return text    
+st.title(translate_text("ENHANCED AI TEACHING ASSISTANT", language), text_alignment='center')
+c1, c2, c3 = st.columns([1, 1, 1])
+with c1:
+    clear = st.button(translate_text("Clear conversation history", language))
+with c2:
+    view = st.button("View conversation history")
+with c3:
+    export = st.button("Export conversation history")
+
+if clear:
+    if st.session_state.conversation:
+        st.session_state.conversation = []
+        st.toast(translate_text("Conversation history cleared!", target_lang=language))
+    else:
+        st.toast(translate_text("Conversation history is already empty.", target_lang=language))
+elif view:
+    if st.session_state.conversation:
+        st.markdown(translate_text("Conversation History:", language))
+        for i, chat in enumerate(st.session_state.conversation, 1):
+            st.markdown(f"{i}:")
+            st.markdown(translate_text(f"You: {chat['question']}", language))
+            st.markdown(translate_text(f"AI {chat['role']}: {chat['answer']}", language))
+            st.markdown('---')
+    else:
+        st.toast(translate_text("Conversation history is empty.", target_lang=language))
+elif export:
+    def export_bytes(history):
+        text = "".join([f"Q{i}: {chat['question']}\nA{i}:{chat['answer']}\n\n" for i, chat in enumerate(st.session_state.conversation, 1)])
+        return io.BytesIO(text.encode("utf-8"))
+    if st.session_state.conversation:
+        st.download_button(
+            label="Export Chat History",
+            data = export_bytes(st.session_state.conversation),
+            file_name="Enhanced_AI_Teaching_Assistant_Conversation.txt", 
+            mime="text/plain"
+        )
+    else:
+        st.toast(translate_text("Conversation history is empty.", target_lang=language))
+
+elif user_question:
+    if user_question.strip():
+        prompt = f"You are a {role}. Please answer the following question: {user_question}"
+        with st.spinner("Generating answer..."):
+            answer = st.markdown(translate_text(prompt, target_lang=language))
+        st.session_state.conversation.append({'role':role, 'question':user_question.strip(), 'answer':answer})
+    else:
+        st.warning("⚠️ Please enter a question if you want to use this AI.")
