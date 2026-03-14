@@ -1,5 +1,5 @@
 import streamlit as st
-from groq_api import generate_response
+from groq_api import generate_response, translate_text
 import io
 
 st.session_state.setdefault("conversation", [])
@@ -144,22 +144,24 @@ user_question = st.text_input("How can I help you today?")
 
 if language:
     st.session_state['language'] = language
+    role = st.selectbox(translate_text("Choose the style of the AI's response:", language), (translate_text("Teacher", language), translate_text("Professor", language), translate_text("Friendly Helper", language)))
+    user_question = st.text_input("How can I help you today?")
 if clear:
     if st.session_state.conversation:
         st.session_state.conversation = []
-        st.toast("Conversation history cleared!")
+        st.toast(translate_text("Conversation history cleared!", target_lang=language))
     else:
-        st.toast("Conversation history is already empty.")
+        st.toast(translate_text("Conversation history is already empty.", target_lang=language))
 elif view:
     if st.session_state.conversation:
-        st.markdown("Conversation History:")
+        st.markdown(translate_text("Conversation History:", language))
         for i, chat in enumerate(st.session_state.conversation, 1):
             st.markdown(f"{i}:")
-            st.markdown(f"You: {chat['question']}")
-            st.markdown(f"AI {chat['role']}: {chat['answer']}")
+            st.markdown(translate_text(f"You: {chat['question']}", language))
+            st.markdown(translate_text(f"AI {chat['role']}: {chat['answer']}", language))
             st.markdown('---')
     else:
-        st.toast("Conversation history is empty.")
+        st.toast(translate_text("Conversation history is empty.", target_lang=language))
 elif export:
     def export_bytes(history):
         text = "".join([f"Q{i}: {chat['question']}\nA{i}:{chat['answer']}\n\n" for i, chat in enumerate(st.session_state.conversation, 1)])
@@ -172,13 +174,13 @@ elif export:
             mime="text/plain"
         )
     else:
-        st.toast("Conversation history is empty.")
+        st.toast(translate_text("Conversation history is empty.", target_lang=language))
 
 elif user_question:
     if user_question.strip():
         prompt = f"You are a {role}. Please answer the following question: {user_question}"
         with st.spinner("Generating answer..."):
-            answer = st.markdown(generate_response(prompt, temperature=0.3, tokens=1024))
+            answer = st.markdown(translate_text(prompt, target_lang=language))
         st.session_state.conversation.append({'role':role, 'question':user_question.strip(), 'answer':answer})
     else:
         st.warning("⚠️ Please enter a question if you want to use this AI.")
