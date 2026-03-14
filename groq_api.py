@@ -37,3 +37,17 @@ def generate_response(prompt: str, temperature: float = 0.3, tokens: int = 1024)
     "2) Replace Groq model in MODELS.\n"
     f"Details: {type(last_err).__name__}: {last_err}"
 )
+
+def translate_text(text: str, target_lang: str):
+    if target_lang.lower()=='english':
+        return text
+    prompt = f"""
+    Translate the following UI label into {target_lang}.
+    Return ONLY the translated text, no explanation or quotes, no punctuation changes\n{text}
+"""
+    
+    try:
+        translated = generate_response(prompt, temperature=0.1, tokens=64)
+        return translated.strip() if translated and not translated.startswith("Error") else text
+    except Exception as e:
+        return text    
