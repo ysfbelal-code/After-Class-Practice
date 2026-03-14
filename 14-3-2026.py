@@ -9,7 +9,7 @@ st.markdown("""
 @import url('');
 
 html, body, [class*="css"], [class*="st-"], .stApp, .stApp * {
-    font-family: 'Segoe UI', Segoe, serif !important;
+    font-family: 'Segoe Fluent Icons', Segoe, serif !important;
 }
 </style>
 """, unsafe_allow_html=True)
