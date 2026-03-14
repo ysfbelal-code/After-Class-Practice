@@ -9,7 +9,7 @@ st.markdown("""
 @import url('');
 
 html, body, [class*="css"], [class*="st-"], .stApp, .stApp * {
-    font-family: 'Times New Roman', Times, serif !important;
+    font-family: 'Cambria Math', Cambria, serif !important;
 }
 </style>
 """, unsafe_allow_html=True)
