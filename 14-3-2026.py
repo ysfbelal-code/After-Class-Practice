@@ -37,6 +37,7 @@ elif view:
     if st.session_state.conversation is None:
         st.toast("Your conversation history is empty.")
     else:
+        st.markdown("Conversation History:")
         for i, chat in enumerate(st.session_state.conversation, 1):
             st.markdown(f"{i}:")
             st.markdown(f"You: {chat['question']}")
