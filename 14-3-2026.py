@@ -1,5 +1,6 @@
 import streamlit as st
 from groq_api import generate_response
+import io
 
 st.session_state.setdefault("conversation", [])
 
@@ -28,21 +29,33 @@ role = st.selectbox("Choose the style of the AI's response:", ("Teacher", "Profe
 user_question = st.text_input("How can I help you today?")
 
 if clear:
-    if st.session_state.conversation is None:
-        st.toast("Your conversation history is already empty.")
-    else:
+    if st.session_state.conversation:
         st.session_state.conversation = []
         st.toast("Conversation history cleared!")
-elif view:
-    if st.session_state.conversation is None:
-        st.toast("Your conversation history is empty.")
     else:
+        st.toast("Conversation history is already empty.")
+elif view:
+    if st.session_state.conversation:
         st.markdown("Conversation History:")
         for i, chat in enumerate(st.session_state.conversation, 1):
             st.markdown(f"{i}:")
             st.markdown(f"You: {chat['question']}")
             st.markdown(f"AI {chat['role']}: {chat['answer']}")
             st.markdown('---')
+    else:
+        st.toast("Conversation history is empty.")
+elif export:
+    def export_bytes(history):
+        text = "".join([f"Q{i}: {chat['question']}\nA{i}:{chat['answer']}\n\n" for i, h in enumerate(st.session_state.conversation, 1)])
+        return io.BytesIO(text.encode("utf-8"))
+    if st.session_state.conversation:
+        st.download_button(
+            label="Export Chat History",
+            data = export_bytes(st.session_state.conversation),
+            file_name="Enhanced_AI_Teaching_Assistant_Conversation.txt", 
+            mime="text/plain"
+        )
+
 elif user_question:
     if user_question.strip():
         prompt = f"You are a {role}. Please answer the following question: {user_question}"
