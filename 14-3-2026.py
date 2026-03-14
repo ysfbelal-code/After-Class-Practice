@@ -55,6 +55,8 @@ elif export:
             file_name="Enhanced_AI_Teaching_Assistant_Conversation.txt", 
             mime="text/plain"
         )
+    else:
+        st.toast("Conversation history is empty.")
 
 elif user_question:
     if user_question.strip():
