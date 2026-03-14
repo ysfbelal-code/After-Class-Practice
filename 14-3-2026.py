@@ -33,6 +33,5 @@ if user_question:
         with st.spinner("Generating answer..."):
             answer = st.markdown(generate_response(prompt, temperature=0.3, tokens=1024))
         st.session_state.conversation.append({'role':role, 'question':user_question.strip(), 'answer':answer})
-        st.success(answer)
     else:
         st.warning("⚠️ Please enter a question if you want to use this AI.")
