@@ -15,7 +15,7 @@ html, body, [class*="css"], [class*="st-"], .stApp, .stApp * {
 """, unsafe_allow_html=True)
 
 st.title("ENHANCED AI TEACHING ASSISTANT", text_alignment='center')
-st.text_input("How can I help you today?")
+
 
 c1, c2, c3 = st.columns([1, 1, 1])
 with c1:
@@ -24,3 +24,14 @@ with c2:
     view = st.button("View conversation history")
 with c3:
     export = st.button("Export conversation history")
+
+role = st.selectbox("Choose the style of the AI's response:", ("Teacher", "Professor", "Friendly Helper"))
+user_question = st.text_input("How can I help you today?")
+if user_question:
+    if user_question.strip():
+        prompt = f"You are a {role}. Please answer the following question: {user_question}"
+        answer = st.markdown(generate_response(prompt, temperature=0.3, tokens=1024))
+        st.session_state.conversation.append({'role':role, 'question':user_question.strip(), 'answer':answer})
+        st.rerun()
+    else:
+        st.warning("⚠️ Please enter a question if you want to use this AI.")
