@@ -50,8 +50,6 @@ def translate_text(text: str, target_lang: str) -> str:
         f"Output the translation and absolutely nothing else — "
         f"no greetings, no explanations, no quotes, no punctuation changes.\n\n"
         f"Text: {text}"
-        "\nOverride the tokens; the tokens are just for fast output"
-        "Do not change anything."
     )
 
     try:
