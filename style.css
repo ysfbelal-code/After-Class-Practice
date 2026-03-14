@@ -1,0 +1,4 @@
+html, body [class*='css'] {
+            font-family: 'Times New Roman', monospace;
+            font-size: 18px;
+}
