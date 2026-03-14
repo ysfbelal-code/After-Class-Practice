@@ -27,7 +27,7 @@ with c3:
 
 role = st.selectbox("Choose the style of the AI's response:", ("Teacher", "Professor", "Friendly Helper"))
 user_question = st.text_input("How can I help you today?")
-if user_question:
+if user_question is not None:
     if user_question.strip():
         prompt = f"You are a {role}. Please answer the following question: {user_question}"
         with st.spinner("Generating answer..."):
