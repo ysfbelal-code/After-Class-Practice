@@ -46,7 +46,7 @@ elif view:
         st.toast("Conversation history is empty.")
 elif export:
     def export_bytes(history):
-        text = "".join([f"Q{i}: {chat['question']}\nA{i}:{chat['answer']}\n\n" for i, h in enumerate(st.session_state.conversation, 1)])
+        text = "".join([f"Q{i}: {chat['question']}\nA{i}:{chat['answer']}\n\n" for i, chat in enumerate(st.session_state.conversation, 1)])
         return io.BytesIO(text.encode("utf-8"))
     if st.session_state.conversation:
         st.download_button(
