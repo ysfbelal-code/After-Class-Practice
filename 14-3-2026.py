@@ -32,6 +32,6 @@ if user_question:
         prompt = f"You are a {role}. Please answer the following question: {user_question}"
         answer = st.markdown(generate_response(prompt, temperature=0.3, tokens=1024))
         st.session_state.conversation.append({'role':role, 'question':user_question.strip(), 'answer':answer})
-        st.rerun()
     else:
         st.warning("⚠️ Please enter a question if you want to use this AI.")
+st.rerun()
