@@ -4,11 +4,8 @@ import time
 
 st.session_state.setdefault("conversation", [])
 
-
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-local_css("style.css")
 
 st.title("ENHANCED AI TEACHING ASSISTANT", text_alignment='center')
 st.text_input("How can I help you today?")
