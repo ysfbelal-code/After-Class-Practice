@@ -1,18 +1,19 @@
 import streamlit as st
 from openai import OpenAI
+import config
 
 @st.cache_data(show_spinner=False)
 
 def generate_response(prompt: str, temperature: float = 0.3, tokens: int = 8192) -> str:
     url = "https://api.groq.com/openai/v1"
-    apikey = st.secrets['groq_api']
-    models = st.secrets.get('GROQ_MODELS', 
+    apikey = config.hf_api_key
+    models = getattr(config, 'GROQ_MODELS', 
                             ['meta-llama/llama-4-scout-17b-16e-instruct', 
                             'llama-3.1-8b-instant', 
                             'llama-3.3-70b-versatile',])
     
     if not apikey:
-        return "Error: hf_api missing in secrets"
+        return "Error: hf_api_key missing in secrets"
 
     last_err = None
     for m in models:
