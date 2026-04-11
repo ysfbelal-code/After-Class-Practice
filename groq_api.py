@@ -5,14 +5,14 @@ from openai import OpenAI
 
 def generate_response(prompt: str, temperature: float = 0.3, tokens: int = 8192) -> str:
     url = "https://api.groq.com/openai/v1"
-    apikey = st.secrets['hf_api']
+    apikey = st.secrets['groq_api']
     models = st.secrets.get('GROQ_MODELS', 
                             ['meta-llama/llama-4-scout-17b-16e-instruct', 
                             'llama-3.1-8b-instant', 
                             'llama-3.3-70b-versatile',])
     
     if not apikey:
-        return "Error: hf_api missing in secrets"
+        return "Error: groq_api missing in secrets"
 
     last_err = None
     for m in models:
